@@ -1,23 +1,27 @@
+> **Fork 说明**：本仓库是 [Province](https://github.com/KaibuchiShuuki/Province)（作者 **Shuuki_**，MIT 协议）的**非官方联机改造版**，由 AI 辅助完成，新增服务端同步与区划归属权限（详见 [FORK_NOTES.md](FORK_NOTES.md)）。原始功能与文档见下方原文。
+
 # 方块政区（Province）
 
 在 Minecraft 世界里划定自己的行政区划，当作一层矢量色块叠在 Xaero 的世界地图和小地图上。
 
-纯客户端模组：不往服务器发任何东西，也不往存档的区块数据里塞东西——区划是独立的一份矢量数据。
+**联机改造版**：本 fork 的数据改为**服务端权威存储 + 网络同步**——多人联机时所有玩家共享同一份区划，进服 / 换维度自动同步，并带区划归属权限（详见 [FORK_NOTES.md](FORK_NOTES.md)）。
 
 ## 需要什么
 
 | 依赖 | 版本 |
 | --- | --- |
-| Minecraft | 26.2 |
-| Fabric Loader | 0.19.3 以上 |
-| Java | 25 |
-| Fabric API | 26.2 线（0.157.0+26.2 上测过） |
-| Xaero's World Map | 1.39.0 以上（世界地图叠层和导出地图要用） |
-| Xaero's Minimap | 26.x 线（小地图叠层要用） |
+| Minecraft | 1.21.7 |
+| Fabric Loader | 0.20.1 以上 |
+| Java | 21 |
+| Fabric API | 1.21.7 线（0.129.0+1.21.7 上测过） |
+| Xaero's World Map | 1.39.12（1.21.7 构建；世界地图叠层和导出地图要用） |
+| Xaero's Minimap | 25.2.10（1.21.7 构建；可选） |
+
+**服务端**只需要本 mod + Fabric API，不需要 Xaero 系列；**客户端**上述依赖都要装。两边装同一个 jar。
 
 没装 Xaero 也能进游戏，只是地图上看不到区划，编辑模式也打不开。
 
-把 `Province-0.2.2+26.2.jar` 丢进 `.minecraft/mods`。文件名里 `+` 后面是**这个 jar 适配的 Minecraft 版本**（Fabric 模组的通用命名惯例）：以后出了 26.3 的构建，下载页上会同时摆着 `Province-0.2.2+26.2.jar` 和 `Province-0.2.2+26.3.jar`，模组自己的版本号可能一样，挑跟自己的游戏版本对得上的那一个装。装错了会在启动时报错退出，不会静默跑成奇怪的行为。
+把 `Province-0.2.2+1.21.7.jar` 丢进 `.minecraft/mods`（客户端和服务端各一份）。文件名里 `+` 后面是**这个 jar 适配的 Minecraft 版本**（Fabric 模组的通用命名惯例）：本 fork 只维护 **1.21.7** 构建；原版作者另有 26.2、1.21.11、1.21.1、1.20.1 各线，见[上游仓库](https://github.com/KaibuchiShuuki/Province)。装错了会在启动时报错退出，不会静默跑成奇怪的行为。
 
 ## 怎么用
 
@@ -145,11 +149,12 @@
 
 ## 数据放在哪
 
-- 单人存档：`<存档目录>/province/<维度>.nbt`，每个维度一个文件，文件名是 `minecraft_overworld.nbt` / `minecraft_the_nether.nbt` / `minecraft_the_end.nbt`。
-- 连服务器：`config/province/worlds/<服务器地址或 default>/<维度>.nbt`。
-- 导出图片：`<存档目录>/province/exports/`。
+- **服务端（权威数据）**：`<存档目录>/province/<维度>.nbt`，每个维度一个文件，文件名是 `minecraft_overworld.nbt` / `minecraft_the_nether.nbt` / `minecraft_the_end.nbt`。单人存档就在你的存档目录下；联机时在**房主/服务器**的存档目录下。
+- 导出图片（客户端本地）：`<存档目录>/province/exports/`。
+- 客户端设置：`config/mc-province/settings.nbt`。
+- 服务端权限配置：`config/mc_province_server.json`。
 
-数据是纯客户端的：换台机器、换个整合包都还在，但服务器上看不到，别的玩家也看不到。
+数据是**服务端权威**的：所有玩家共享同一份区划；改别人的区划会被服务端拒绝（默认 `editMode = "own"`，只有 OP 能改全部）。同目录下的 `*.nbt.bak` 是上一次保存的自动备份，误覆盖时改回去即可。
 
 **旧数据会自动迁移。** 0.2.0 及以前存下的边界是连续坐标（斜边、曲线），0.2.1 读存档时会把它们重新吸附到方块格线上，落完盘再写回文件（文件头里的 `version` 从 1 升到 2）。这个过程只对旧文件发生一次，之后就不再动了。重新长出来的形状按上面那条「中心落在里面就算」的规则算，边缘可能差个一格半格；位置、层级、名字、颜色都不变。
 
@@ -256,11 +261,11 @@ translateY = pc * offx * zoom + ps * offz * zoom
 
 ### 改代码时的几个坑
 
-这个项目跟的是 Minecraft 26.2 + Fabric，有些 API 是最近才改过名或者挪走的，踩过一次记在这里：
+这个项目跟的是 Minecraft **1.21.7** + Fabric（本 fork 基于上游 1.21.11 分支移植，服务端同步改造见 [FORK_NOTES.md](FORK_NOTES.md)）。有些 API 在 1.21.9+ 改过名或者挪走了，1.21.7 上还是旧写法，踩过一次记在这里：
 
-- **按键分类的 lang 键是单数**：`key.category.mc-province.main`。写成复数 `key.categories.…` 是 1.21 以前 `KeyMapping` 构造函数的写法，26.2 只认单数，写错了界面上会直接显示原始键名。
-- **`Screen` 上没有 `hasShiftDown()` 了**。要判断修饰键就直接问 GLFW：`InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), InputConstants.KEY_LSHIFT)`，左右 Shift 各判一次。
-- **`ResourceKey` 取标识用 `identifier()`**，不再是 `location()`。
+- **按键分类是纯字符串**：`key.category.mc-province.main`。`KeyMapping.Category` 是 1.21.9+ 的 API，1.21.7 上不存在，直接给 `KeyMapping` 构造函数传分类字符串。
+- **`Screen.hasShiftDown()` 在 1.21.7 上还在**，但这里沿用了直接问 GLFW 的写法：`InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), InputConstants.KEY_LSHIFT)`，左右 Shift 各判一次。
+- **`ResourceKey` 取标识用 `location()`**（`identifier()` 是 1.21.9+ 的名字）。
 - **`EditSession.onRelease()` 是无参的**，早期版本带一个坐标参数。
 - **`VectorShape` 自带 `contains(double, double)`**，判断点是否落在形状里不用先取 `Area`。
 - **`CompoundTag` 没有 `getIntArrayOr(String, int[])`**。要往 NBT 里存一组 int，用逗号分隔的 `String` 最省事（`collapsed` 就是这么存的）。
@@ -294,7 +299,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-产物是 `build/libs/Province-0.2.2+26.2.jar`。
+产物是 `build/libs/Province-0.2.2+1.21.7.jar`。
 
 版本号与 MC 版本都在 `gradle.properties` 里：`mod_version` 是模组自己的版本，`minecraft_version` 是适配的游戏版本，`build.gradle` 只负责把它们拼成 `Province-<mod_version>+<minecraft_version>.jar`。要出别的游戏版本的构建，改 `minecraft_version`（以及 `fabric_api_version` 那条对应的线）重编即可，产物名会自动跟着变。
 
