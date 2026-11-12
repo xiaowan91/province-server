@@ -30,6 +30,8 @@ public final class Province {
     private int order;
     /** 上一帧有没有把地名画到屏幕上。渲染层写、序号标记读，纯运行期状态。 */
     private boolean nameDrawn = true;
+    /** 归属：创建者的 UUID 字符串；空 = 旧数据/未登记（只有 OP 能改）。 */
+    private String owner = "";
     private final VectorShape shape = VectorShape.empty();
 
     public Province(int id, int parentId, int tier, String nameZh, String nameEn, String levelKey, int color) {
@@ -113,6 +115,32 @@ public final class Province {
 
     public void setNameDrawn(boolean value) {
         this.nameDrawn = value;
+    }
+
+    /** 归属（创建者 UUID 字符串，空 = 旧数据/未登记）。 */
+    public String owner() {
+        return this.owner;
+    }
+
+    public void setOwner(String value) {
+        this.owner = value == null ? "" : value;
+    }
+
+    /**
+     * 除 visible 之外的可编辑内容是否完全一致（服务端权限校验用）。
+     *
+     * <p>visible 只是显示开关，不当成「修改」；几何用同一套编码比较，两边数据同源所以完全一致。</p>
+     */
+    public boolean sameContent(Province other) {
+        return this.id == other.id
+                && this.parentId == other.parentId
+                && this.tier == other.tier
+                && this.nameZh.equals(other.nameZh)
+                && this.nameEn.equals(other.nameEn)
+                && this.levelKey.equals(other.levelKey)
+                && this.color == other.color
+                && this.order == other.order
+                && java.util.Arrays.equals(VectorCodec.encode(this.shape), VectorCodec.encode(other.shape));
     }
 
     /** 几何形状；调用方可以直接改，改完记得通知存档层。 */

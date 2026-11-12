@@ -36,6 +36,7 @@ public final class ProvinceNbt {
     private static final String TAG_VISIBLE = "visible";
     private static final String TAG_ORDER = "order";
     private static final String TAG_SHAPE = "shape";
+    private static final String TAG_OWNER = "owner";
 
     private ProvinceNbt() {
     }
@@ -64,6 +65,7 @@ public final class ProvinceNbt {
         tag.putBoolean(TAG_VISIBLE, province.visible());
         tag.putInt(TAG_ORDER, province.order());
         tag.putByteArray(TAG_SHAPE, VectorCodec.encode(province.shape()));
+        tag.putString(TAG_OWNER, province.owner());
         return tag;
     }
 
@@ -103,6 +105,8 @@ public final class ProvinceNbt {
             province.setVisible(tag.getBooleanOr(TAG_VISIBLE, true));
             // 老档案没有这个字段：用 id 顶上，排出来跟以前一模一样。
             province.setOrder(tag.getIntOr(TAG_ORDER, id));
+            // 老档案没有归属字段：留空，服务端按「只有 OP 能改」处理。
+            province.setOwner(tag.getStringOr(TAG_OWNER, ""));
             province.shape().copyFrom(shape);
             store.putRaw(province);
             maxId = Math.max(maxId, id);

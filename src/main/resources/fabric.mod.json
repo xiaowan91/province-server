@@ -11,7 +11,7 @@
     "issues": "https://github.com/KaibuchiShuuki/Province/issues"
   },
   "icon": "assets/mc-province/icon.png",
-  "environment": "client",
+  "environment": "*",
   "entrypoints": {
     "main": ["com.mcprovince.McProvince"],
     "client": ["com.mcprovince.McProvince"]

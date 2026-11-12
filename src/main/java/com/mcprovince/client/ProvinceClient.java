@@ -2,7 +2,9 @@ package com.mcprovince.client;
 
 import com.mcprovince.ProvinceSelfTest;
 import com.mcprovince.data.ProvinceData;
+import com.mcprovince.net.ProvincePayloads;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 
 import java.util.Objects;
@@ -11,9 +13,6 @@ import java.util.Objects;
 public final class ProvinceClient {
 
     private static final ProvinceData DATA = new ProvinceData();
-    private static final int SAVE_INTERVAL_TICKS = 100;
-
-    private static int saveCountdown;
 
     private ProvinceClient() {
     }
@@ -22,6 +21,17 @@ public final class ProvinceClient {
         ProvinceSettings.get().load();
         ProvinceKeys.register();
         ProvinceMapHook.register();
+        // 服务端下发的区划同步：收齐一块后整份替换本地数据。
+        ClientPlayNetworking.registerGlobalReceiver(ProvincePayloads.SyncPayload.ID, (payload, context) ->
+                context.client().execute(() -> {
+                    if (ProvinceClient.data().receiveSync(payload.dimension(), payload.version(),
+                            payload.last(), payload.chunk())) {
+                        ProvinceEditor.onRemoteSync();
+                    }
+                }));
+        // 服务端接受编辑后的版本号回执：只更新版本号，不动数据和撤销历史。
+        ClientPlayNetworking.registerGlobalReceiver(ProvincePayloads.AckPayload.ID, (payload, context) ->
+                context.client().execute(() -> ProvinceClient.data().ackVersion(payload.version())));
         ClientTickEvents.END_CLIENT_TICK.register(ProvinceClient::onEndTick);
     }
 
@@ -35,10 +45,9 @@ public final class ProvinceClient {
         if (!Objects.equals(before, DATA.worldKey())) {
             ProvinceEditor.onWorldChanged();
         }
-        if (++saveCountdown >= SAVE_INTERVAL_TICKS) {
-            saveCountdown = 0;
-            DATA.save();
-        }
+        // 编辑提交：合并冷却，把整份快照发给服务端（服务端负责落盘和广播）。
+        DATA.tickCooldown();
+        DATA.tickSync();
         ProvinceTitleTracker.tick(minecraft);
         // 自检里延后的那几条（要等资源包加载完）靠这里跑；平时是空转。
         ProvinceSelfTest.onClientTick(minecraft);

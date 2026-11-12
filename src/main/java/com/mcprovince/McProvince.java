@@ -15,7 +15,9 @@ public class McProvince implements ModInitializer, ClientModInitializer {
 
     @Override
     public void onInitialize() {
-        // 纯客户端模组，公共入口没有要做的事。
+        // 双端通用：注册网络包类型 + 服务端逻辑（单人存档的集成服务器也走这里）。
+        com.mcprovince.net.ProvincePayloads.init();
+        com.mcprovince.server.ProvinceServer.init();
     }
 
     @Override
