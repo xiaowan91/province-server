@@ -6,6 +6,7 @@ import com.mcprovince.core.AdminLevels;
 import com.mcprovince.core.Province;
 import com.mcprovince.core.ProvinceStore;
 import com.mcprovince.edit.EditHistory;
+import net.minecraft.client.Minecraft;
 import com.mcprovince.edit.EditSession;
 import com.mcprovince.edit.EditTool;
 import net.minecraft.nbt.CompoundTag;
@@ -329,6 +330,11 @@ public final class ProvinceEditor {
             status = Lang.t("province.editor.create_failed", e.getMessage());
             return null;
         }
+        // 归属记到本地玩家名下；服务端接受编辑时会再按提交者校正一次。
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.player != null) {
+            created.setOwner(minecraft.player.getStringUUID());
+        }
         // 名字可能留空，历史记录和状态栏都得有个说法，不能写成「已新建「」」。
         String label = created.displayName(ProvinceSettings.get().nameFormat);
         push(before, Lang.t("province.editor.undo.create", label.isEmpty() ? Lang.t("province.editor.unnamed") : label));
@@ -515,5 +521,10 @@ public final class ProvinceEditor {
         status = "";
         // 换存档 / 换维度之后，显示状态按「显示第几级」重新铺一遍。
         applyDefaultVisibility();
+    }
+
+    /** 收到服务端下发的别人的编辑：清掉撤销历史，免得撤销把别人的改动顶掉。 */
+    public static void onRemoteSync() {
+        HISTORY.clear();
     }
 }
