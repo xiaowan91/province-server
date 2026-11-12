@@ -293,7 +293,7 @@ public final class AdminLevels {
             return;
         }
         try {
-            CompoundTag tag = NbtIo.readCompressed(path, NbtAccounter.defaultQuota());
+            CompoundTag tag = NbtIo.readCompressed(path, NbtAccounter.unlimitedHeap());
             ListTag list = tag.getListOrEmpty("levels");
             for (int i = 0; i < list.size(); i++) {
                 CompoundTag entry = list.getCompoundOrEmpty(i);

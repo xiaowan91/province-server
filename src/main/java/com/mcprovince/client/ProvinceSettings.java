@@ -23,7 +23,8 @@ public final class ProvinceSettings {
     private static final ProvinceSettings INSTANCE = new ProvinceSettings();
 
     // —— 世界地图 ——
-    public boolean worldMapEnabled;
+    /** 世界地图上是否显示区划；默认开（联机时新玩家一进来就能看到别人的领土）。 */
+    public boolean worldMapEnabled = true;
     // —— 小地图 ——
     /** 在小地图上也叠一层区划；跟世界地图各管各的。 */
     public boolean minimapEnabled;
@@ -94,7 +95,8 @@ public final class ProvinceSettings {
     public boolean exportWithProvinces = true;
 
     // —— 进入行政区划时的标题提示 ——
-    public boolean titleEnabled;
+    /** 进入新区划时屏幕弹出地名；默认开。 */
+    public boolean titleEnabled = true;
     /** 主标题下面再挂一条灰色的父级名；默认关。 */
     public boolean titleSubtitle;
     public int titleTier = Province.MIN_TIER;
@@ -129,7 +131,7 @@ public final class ProvinceSettings {
             return;
         }
         try {
-            CompoundTag tag = NbtIo.readCompressed(path, NbtAccounter.defaultQuota());
+            CompoundTag tag = NbtIo.readCompressed(path, NbtAccounter.unlimitedHeap());
             this.worldMapEnabled = tag.getBooleanOr("worldMapEnabled", this.worldMapEnabled);
             this.minimapEnabled = tag.getBooleanOr("minimapEnabled", this.minimapEnabled);
             // 不再兼容旧的 highestTierShown：那一版默认值是最高级，留着会把新默认值第一级顶掉。

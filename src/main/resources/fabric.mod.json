@@ -11,7 +11,7 @@
     "issues": "https://github.com/KaibuchiShuuki/Province/issues"
   },
   "icon": "assets/mc-province/icon.png",
-  "environment": "client",
+  "environment": "*",
   "entrypoints": {
     "main": ["com.mcprovince.McProvince"],
     "client": ["com.mcprovince.McProvince"]
@@ -22,8 +22,8 @@
   ],
   "depends": {
     "fabricloader": ">=0.15.0",
-    "minecraft": "~26.2",
-    "java": ">=25",
+    "minecraft": "~1.21.7",
+    "java": ">=21",
     "fabric-api": "*",
     "xaeroworldmap": ">=1.39.0"
   }

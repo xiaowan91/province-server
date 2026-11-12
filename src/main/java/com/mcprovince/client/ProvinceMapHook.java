@@ -7,9 +7,8 @@ import java.lang.reflect.Field;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.KeyEvent;
 import org.joml.Matrix3x2f;
 import org.joml.Matrix3x2fStack;
 import org.lwjgl.glfw.GLFW;
@@ -17,7 +16,7 @@ import org.lwjgl.glfw.GLFW;
 /**
  * 把行政区划叠到 Xaero 的世界地图上。
  *
- * <p>0.2.1 是 {@code @Mixin(GuiMap.class)}，直接影子 cameraX/cameraZ/scale/screenScale 再注入
+ * <p>0.2.1/0.2.2 前期是 {@code @Mixin(GuiMap.class)}，直接影子 cameraX/cameraZ/scale/screenScale 再注入
  * 渲染与输入。这套在 fabric-loader 0.19.3（ASM 9.10.1）上能跑，但只要换成 0.20.0
  * （ASM 9.11）启动就崩：{@code GuiMap.render} 有 5019 条指令，Mixin 的 TreeTransformer 写回类时
  * 会让 ASM 给整个类的每个方法重算栈帧，于是抛
@@ -42,7 +41,7 @@ public final class ProvinceMapHook {
             }
             // 每次 init 都要重新挂：从树状图 setScreen 回来时 GuiMap 会再走一遍 init，
             // 而 Fabric 的 per-screen 事件活不过那一趟往返，判重会让图层从此不再出现。
-            ScreenEvents.afterForeground(screen).register(ProvinceMapHook::renderOverlay);
+            ScreenEvents.afterRender(screen).register(ProvinceMapHook::renderOverlay);
         });
     }
 
@@ -73,7 +72,7 @@ public final class ProvinceMapHook {
         return 0.0;
     }
 
-    private static void renderOverlay(Screen screen, GuiGraphicsExtractor graphics, int mouseX, int mouseY,
+    private static void renderOverlay(Screen screen, GuiGraphics graphics, int mouseX, int mouseY,
             float tickDelta) {
         if (!isGuiMap(screen)) {
             return;
@@ -125,19 +124,19 @@ public final class ProvinceMapHook {
         return !ProvinceMapOverlay.onMouseReleased(button);
     }
 
-    public static boolean allowKeyPress(KeyEvent event) {
+    public static boolean allowKeyPress(int keyCode, int scanCode, int modifiers) {
         // R：在世界地图上直接开 / 关区划图层，不用绕去设置界面。
-        if (ProvinceKeys.toggleProvinces != null && ProvinceKeys.toggleProvinces.matches(event)) {
+        if (ProvinceKeys.toggleProvinces != null && ProvinceKeys.toggleProvinces.matches(keyCode, scanCode)) {
             ProvinceSettings settings = ProvinceSettings.get();
             settings.worldMapEnabled = !settings.worldMapEnabled;
             settings.save();
             return false;
         }
-        if (ProvinceKeys.openEditor != null && ProvinceKeys.openEditor.matches(event)) {
+        if (ProvinceKeys.openEditor != null && ProvinceKeys.openEditor.matches(keyCode, scanCode)) {
             ProvinceEditor.toggleActive();
             return false;
         }
-        if (ProvinceEditor.isActive() && event.key() == GLFW.GLFW_KEY_ESCAPE) {
+        if (ProvinceEditor.isActive() && keyCode == GLFW.GLFW_KEY_ESCAPE) {
             ProvinceEditor.setActive(false);
             return false;
         }
@@ -145,18 +144,21 @@ public final class ProvinceMapHook {
     }
 
     /** 键盘原始事件（来自 KeyboardHandler.keyPress 的混入）。返回 true = 这次按键被吃掉。 */
-    public static boolean handleRawKey(KeyEvent event) {
-        Screen screen = Minecraft.getInstance().gui.screen();
+    public static boolean handleRawKey(int keyCode, int scanCode, int action, int modifiers) {
+        if (action != GLFW.GLFW_PRESS && action != GLFW.GLFW_REPEAT) {
+            return false;
+        }
+        Screen screen = Minecraft.getInstance().screen;
         if (screen == null || !isGuiMap(screen)) {
             return false;
         }
-        return !allowKeyPress(event);
+        return !allowKeyPress(keyCode, scanCode, modifiers);
     }
 
     /** 鼠标原始事件（来自 MouseHandler.onButton 的混入）。press=true 是按下，false 是松开。 */
     public static boolean handleRawMouse(int button, boolean press) {
         Minecraft minecraft = Minecraft.getInstance();
-        Screen screen = minecraft.gui.screen();
+        Screen screen = minecraft.screen;
         if (screen == null || !isGuiMap(screen)) {
             return false;
         }

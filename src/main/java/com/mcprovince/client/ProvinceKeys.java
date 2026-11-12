@@ -1,16 +1,15 @@
 package com.mcprovince.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 /** 快捷键。默认都不占用游戏常用键位。 */
 public final class ProvinceKeys {
 
-    public static final KeyMapping.Category CATEGORY =
-            KeyMapping.Category.register(Identifier.fromNamespaceAndPath("mc-province", "main"));
+    /** 键位分类。1.21.7 的分类是纯字符串，显示名由语言文件 key.category.mc-province.main 提供。 */
+    public static final String CATEGORY = "key.category.mc-province.main";
 
     /** 打开编辑器。 */
     public static KeyMapping openEditor;
@@ -21,9 +20,9 @@ public final class ProvinceKeys {
     }
 
     public static void register() {
-        openEditor = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+        openEditor = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                 "key.mc-province.open_editor", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_P, CATEGORY));
-        toggleProvinces = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+        toggleProvinces = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                 "key.mc-province.toggle_provinces", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_R, CATEGORY));
     }
 }
