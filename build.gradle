@@ -9,7 +9,7 @@ plugins {
 // 所以产物名必须带出来，玩家一眼就知道这个 jar 是给哪一版游戏用的。
 // 产物固定叫 Province-<版本>+<MC 版本>.jar（默认会跟 settings.gradle 里的工程目录名走，
 // 那样出来的是 mc-province-1.21.11-x.y.z.jar）。
-version = "${mod_version}+${minecraft_version}"
+version = "${mod_version}+${minecraft_version}-server"
 base {
     archivesName = "Province"
 }

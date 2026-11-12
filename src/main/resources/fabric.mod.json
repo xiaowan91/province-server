@@ -4,7 +4,7 @@
   "version": "${version}",
   "name": "Province",
   "description": "在 Minecraft 世界里划定自己的行政区划，并作为矢量图层叠在 Xaero 的世界地图上。",
-  "authors": ["Shuuki_"],
+  "authors": ["Shuuki_ (original)", "Xiaowanwan (fork)"],
   "license": "MIT",
   "contact": {
     "homepage": "https://github.com/KaibuchiShuuki/Province",

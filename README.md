@@ -21,7 +21,7 @@
 
 没装 Xaero 也能进游戏，只是地图上看不到区划，编辑模式也打不开。
 
-把 `Province-0.2.2+1.21.7.jar` 丢进 `.minecraft/mods`（客户端和服务端各一份）。文件名里 `+` 后面是**这个 jar 适配的 Minecraft 版本**（Fabric 模组的通用命名惯例）：本 fork 只维护 **1.21.7** 构建；原版作者另有 26.2、1.21.11、1.21.1、1.20.1 各线，见[上游仓库](https://github.com/KaibuchiShuuki/Province)。装错了会在启动时报错退出，不会静默跑成奇怪的行为。
+把 `Province-0.3.0+1.21.7-server.jar` 丢进 `.minecraft/mods`（客户端和服务端各一份）。文件名里 `+` 后面是**这个 jar 适配的 Minecraft 版本**（Fabric 模组的通用命名惯例）：本 fork 只维护 **1.21.7** 构建；原版作者另有 26.2、1.21.11、1.21.1、1.20.1 各线，见[上游仓库](https://github.com/KaibuchiShuuki/Province)。装错了会在启动时报错退出，不会静默跑成奇怪的行为。
 
 ## 怎么用
 
@@ -299,7 +299,7 @@ gradlew.bat build
 ./gradlew build
 ```
 
-产物是 `build/libs/Province-0.2.2+1.21.7.jar`。
+产物是 `build/libs/Province-0.3.0+1.21.7-server.jar`。
 
 版本号与 MC 版本都在 `gradle.properties` 里：`mod_version` 是模组自己的版本，`minecraft_version` 是适配的游戏版本，`build.gradle` 只负责把它们拼成 `Province-<mod_version>+<minecraft_version>.jar`。要出别的游戏版本的构建，改 `minecraft_version`（以及 `fabric_api_version` 那条对应的线）重编即可，产物名会自动跟着变。
 
