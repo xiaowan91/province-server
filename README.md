@@ -1,4 +1,4 @@
-> **Fork 说明**：本仓库是 [Province](https://github.com/KaibuchiShuuki/Province)（作者 **Shuuki_**，MIT 协议）的**非官方联机改造版**，由 AI 辅助完成，新增服务端同步与区划归属权限（详见 [FORK_NOTES.md](FORK_NOTES.md)）。原始功能与文档见下方原文。
+> **Fork 说明**：本模组是 [Province](https://github.com/KaibuchiShuuki/Province)（**原作者 Shuuki_**，MIT 协议）的**非官方 1.21.7 移植 + 联机扩展版**，由 **Xiaowanwan** 移植并新增服务端同步与区划归属权限（详见 [FORK_NOTES.md](FORK_NOTES.md)）。与原版使用相同 mod id（`mc-province`），**请勿与原版同时安装**，本模组可直接替代原版。
 
 # 方块政区（Province）
 

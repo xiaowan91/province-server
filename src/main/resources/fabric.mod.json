@@ -2,13 +2,13 @@
   "schemaVersion": 1,
   "id": "mc-province",
   "version": "${version}",
-  "name": "Province",
-  "description": "在 Minecraft 世界里划定自己的行政区划，并作为矢量图层叠在 Xaero 的世界地图上。",
-  "authors": ["Shuuki_ (original)", "Xiaowanwan (fork)"],
+  "name": "Province · 联机版",
+  "description": "基于 Shuuki_ 原作 Province（MIT 协议）的 1.21.7 联机移植版。原作者：Shuuki_；本版由 Xiaowanwan 移植到 Fabric 1.21.7，并新增服务端同步（所有玩家共享区划）与区划归属权限。非官方版本，请以原作者版本为准。注意：与原版使用相同 mod id（mc-province），请勿同时安装，本模组可直接替代原版。",
+  "authors": ["Shuuki_ (Original Author)", "Xiaowanwan (1.21.7 Port & Multiplayer Sync)"],
   "license": "MIT",
   "contact": {
-    "homepage": "https://github.com/KaibuchiShuuki/Province",
-    "issues": "https://github.com/KaibuchiShuuki/Province/issues"
+    "homepage": "https://github.com/xiaowan91/province-server",
+    "issues": "https://github.com/xiaowan91/province-server/issues"
   },
   "icon": "assets/mc-province/icon.png",
   "environment": "*",
