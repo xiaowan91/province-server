@@ -9,7 +9,7 @@ plugins {
 // 所以产物名必须带出来，玩家一眼就知道这个 jar 是给哪一版游戏用的。
 // 产物固定叫 Province-<版本>+<MC 版本>.jar（默认会跟 settings.gradle 里的工程目录名走，
 // 那样出来的是 mc-province-1.21.11-x.y.z.jar）。
-version = "${mod_version}+${minecraft_version}-server"
+version = "${mod_version}"
 base {
     archivesName = "Province"
 }
@@ -46,6 +46,14 @@ processResources {
     filesMatching('fabric.mod.json') {
         expand "version": version
     }
+}
+
+// 打包纯净版：排除隐藏文件/系统垃圾，避免打包器或 CurseForge 校验误伤。
+tasks.named('jar', Jar).configure {
+    exclude '**/.*'
+    exclude '**/__MACOSX/**'
+    exclude '**/.DS_Store'
+    exclude '**/Thumbs.db'
 }
 
 // 目标 Java 版本用 toolchain 声明（不是 options.release + source/targetCompatibility）：
